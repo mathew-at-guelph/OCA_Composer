@@ -216,15 +216,29 @@ const AttributeMatch = () => {
     setCurrentDataValidatorPage("OCADataValidatorCheck");
   }, [gridRef, setMatchingRowData, setCurrentDataValidatorPage]);
 
-  const matchingFunction = useCallback((unassignedVar, attr) => {
+  const matchingFunction = useCallback((unassignedVar, attr, label) => {
     for (let i = 0; i < unassignedVar.length; i++) {
       if (unassignedVar[i].toLowerCase() === attr.toLowerCase()) {
         return i;
       }
     }
+    if (label) {
+      for (let i = 0; i < unassignedVar.length; i++) {
+        if (unassignedVar[i].toLowerCase() === label.toLowerCase()) {
+          return i;
+        }
+      }
+    }
     for (let i = 0; i < unassignedVar.length; i++) {
       if (unassignedVar[i].toLowerCase().includes(attr.toLowerCase())) {
         return i;
+      }
+    }
+    if (label) {
+      for (let i = 0; i < unassignedVar.length; i++) {
+        if (unassignedVar[i].toLowerCase().includes(label.toLowerCase())) {
+          return i;
+        }
       }
     }
     return -1;
@@ -255,7 +269,7 @@ const AttributeMatch = () => {
     if (firstTimeMatchingRef.current) {
       if (matchingRowData && matchingRowData?.length > 0) {
         const newMatchingRowData = matchingRowData.map((node) => {
-          const index = matchingFunction(unassignedVariables, node.Attribute);
+          const index = matchingFunction(unassignedVariables, node.Attribute, node[type]);
           const DatasetVal = index !== -1 ? unassignedVariables[index] : "";
           if (index !== -1) unassignedVariables.splice(index, 1);
           return { ...node, Dataset: DatasetVal };
@@ -275,12 +289,13 @@ const AttributeMatch = () => {
           });
 
           const newMatchingRowData = attributeNames.map((attr) => {
-            const index = matchingFunction(unassignedVariables, attr);
+            const label = labelMap[attr] || "";
+            const index = matchingFunction(unassignedVariables, attr, label);
             const datasetMatch = index !== -1 ? unassignedVariables[index] : "";
             if (index !== -1) unassignedVariables.splice(index, 1);
             return {
               Attribute: attr,
-              [type]: labelMap[attr] || "",
+              [type]: label,
               Dataset: datasetMatch
             };
           });
