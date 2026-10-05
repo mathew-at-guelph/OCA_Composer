@@ -1,3 +1,5 @@
+import i18next from "i18next";
+
 export const messages = {
   successfulUpload: "File uploaded successfully",
   fileAccepted: "File accepted",
@@ -17,5 +19,8 @@ export const messages = {
   delimiterMismatchWarning: (expectedType, uploadedType) =>
     `Schema delimiter expects ${expectedType}, but you uploaded ${uploadedType}. You can continue, but parsing or validation results may not match the schema as expected.`,
   linkmlMissingEnumsWarning: (enumNames) =>
-    `This LinkML schema references enumeration types that are not included: ${enumNames.join(", ")}. Entry codes for the affected attributes will not be generated. Include the missing enum definitions from the parent schema.`
+    i18next.t(
+      "This LinkML schema references enumeration types that are not included: {{enumNames}}. Entry codes for the affected attributes will not be generated. Include the missing enum definitions from the parent schema.",
+      { enumNames: enumNames.join(", ") }
+    )
 };
